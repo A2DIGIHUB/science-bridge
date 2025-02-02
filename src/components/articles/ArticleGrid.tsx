@@ -11,6 +11,8 @@ const articles = [
     author: "Dr. Sarah Smith",
     date: "2024-02-15",
     readTime: "5 min",
+    likes: 234,
+    views: 1205,
   },
   {
     id: 2,
@@ -22,6 +24,8 @@ const articles = [
     author: "Prof. John Doe",
     date: "2024-02-14",
     readTime: "7 min",
+    likes: 189,
+    views: 892,
   },
   {
     id: 3,
@@ -33,6 +37,8 @@ const articles = [
     author: "Dr. Michael Brown",
     date: "2024-02-13",
     readTime: "6 min",
+    likes: 312,
+    views: 1567,
   },
 ];
 
@@ -44,7 +50,7 @@ const ArticleGrid = ({ viewMode }: { viewMode: 'grid' | 'list' }) => {
           key={article.id}
           className={`bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow ${
             viewMode === 'list' ? 'flex' : ''
-          }`}
+          } animate-fade-in`}
         >
           <div className={`${viewMode === 'list' ? 'w-1/3' : ''}`}>
             <div className="aspect-video relative">
@@ -63,7 +69,9 @@ const ArticleGrid = ({ viewMode }: { viewMode: 'grid' | 'list' }) => {
               ))}
             </div>
             
-            <h3 className="text-xl font-bold text-accent mb-2">{article.title}</h3>
+            <h3 className="text-xl font-bold text-accent mb-2 hover:text-primary transition-colors">
+              {article.title}
+            </h3>
             <p className="text-accent/60 mb-4">{article.excerpt}</p>
             
             <div className="flex items-center justify-between text-sm text-accent/40">
@@ -76,8 +84,9 @@ const ArticleGrid = ({ viewMode }: { viewMode: 'grid' | 'list' }) => {
               </div>
               
               <div className="flex items-center gap-2">
-                <button className="p-1 hover:text-primary transition-colors">
+                <button className="p-1 hover:text-primary transition-colors flex items-center gap-1">
                   <ThumbsUp className="h-4 w-4" />
+                  <span>{article.likes}</span>
                 </button>
                 <button className="p-1 hover:text-primary transition-colors">
                   <Share2 className="h-4 w-4" />
