@@ -6,12 +6,10 @@ import QuizSection from '../components/home/QuizSection';
 import EventsSection from '../components/home/EventsSection';
 import CommunitySection from '../components/home/CommunitySection';
 import NewsletterSection from '../components/home/NewsletterSection';
-import Footer from '../components/Footer';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-secondary">
-      <Navigation />
+    <div className="min-h-screen bg-secondary pt-16">
       <main>
         <HeroSection />
         <FeaturedArticles />
@@ -21,7 +19,6 @@ const Index = () => {
         <CommunitySection />
         <NewsletterSection />
       </main>
-      <Footer />
     </div>
   );
 };
