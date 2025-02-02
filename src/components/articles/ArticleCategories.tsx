@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Microscope, Heart, Globe, Rocket, Brain, Flask } from 'lucide-react';
+import { Microscope, Heart, Globe, Rocket, Brain, Atom } from 'lucide-react';
 
 const categories = [
-  { id: 'physics', label: 'Physics', icon: Flask },
+  { id: 'physics', label: 'Physics', icon: Atom },
   { id: 'health', label: 'Health & Medicine', icon: Heart },
   { id: 'climate', label: 'Climate & Environment', icon: Globe },
   { id: 'space', label: 'Space & Astronomy', icon: Rocket },
