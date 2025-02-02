@@ -1,4 +1,3 @@
-import Navigation from '../components/Navigation';
 import HeroSection from '../components/home/HeroSection';
 import FeaturedArticles from '../components/home/FeaturedArticles';
 import VideoSection from '../components/home/VideoSection';
@@ -9,8 +8,8 @@ import NewsletterSection from '../components/home/NewsletterSection';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-secondary pt-16">
-      <main>
+    <div className="min-h-screen w-full bg-secondary pt-16">
+      <main className="w-full">
         <HeroSection />
         <FeaturedArticles />
         <VideoSection />
