@@ -8,48 +8,38 @@ import PopularTags from '../components/home/PopularTags';
 const Index = () => {
   return (
     <div className="min-h-screen w-full bg-surface">
-      <main className="w-full">
-        <motion.div
-          initial="initial"
-          animate="animate"
-          variants={{
-            animate: {
-              transition: {
-                staggerChildren: 0.2
-              }
-            }
-          }}
-        >
-          <HeroSection />
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* Main Content */}
-              <div className="lg:col-span-8">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <FeaturedArticles />
-                  <RecentPosts />
-                </motion.div>
-              </div>
+      <main>
+        <HeroSection />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Main Content */}
+            <motion.div 
+              className="lg:col-span-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <FeaturedArticles />
+              <RecentPosts />
+            </motion.div>
 
-              {/* Sidebar */}
-              <div className="lg:col-span-4 space-y-8">
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                >
-                  <PopularTags />
+            {/* Sidebar */}
+            <motion.div 
+              className="lg:col-span-4 space-y-8"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <div className="sticky top-24">
+                <PopularTags />
+                <div className="mt-8">
                   <NewsletterSection />
-                </motion.div>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
       </main>
     </div>
   );
