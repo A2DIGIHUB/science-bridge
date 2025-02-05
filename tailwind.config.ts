@@ -81,7 +81,30 @@ export default {
         "float-medium": "float 5s ease-in-out infinite",
         "float-fast": "float 4s ease-in-out infinite",
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            color: '#2D283E',
+            h1: {
+              color: '#2D283E',
+            },
+            h2: {
+              color: '#2D283E',
+            },
+            h3: {
+              color: '#2D283E',
+            },
+            a: {
+              color: '#4A5D4F',
+              '&:hover': {
+                color: '#374543',
+              },
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;

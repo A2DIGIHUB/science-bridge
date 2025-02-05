@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Index from './pages/Index';
 import Articles from './pages/Articles';
+import ArticleDetail from './pages/ArticleDetail';
 import About from './pages/About';
 import NotFound from './pages/NotFound';
 import Footer from './components/Footer';
@@ -16,6 +17,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/articles" element={<Articles />} />
+            <Route path="/articles/:slug" element={<ArticleDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

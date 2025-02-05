@@ -1,8 +1,10 @@
 import { Clock, ThumbsUp, Share2, Bookmark } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const articles = [
   {
     id: 1,
+    slug: 'future-of-quantum-computing',
     title: "The Future of Quantum Computing",
     excerpt: "Exploring the latest breakthroughs in quantum computing and their implications...",
     image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb",
@@ -16,6 +18,7 @@ const articles = [
   },
   {
     id: 2,
+    slug: 'understanding-crispr-technology',
     title: "Understanding CRISPR Technology",
     excerpt: "A deep dive into how CRISPR gene editing is revolutionizing medicine...",
     image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69",
@@ -29,6 +32,7 @@ const articles = [
   },
   {
     id: 3,
+    slug: 'black-holes-new-discoveries',
     title: "Black Holes: New Discoveries",
     excerpt: "Recent observations have revealed fascinating new details about black holes...",
     image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564",
@@ -52,7 +56,10 @@ const ArticleGrid = ({ viewMode }: { viewMode: 'grid' | 'list' }) => {
             viewMode === 'list' ? 'flex' : ''
           } animate-fade-in`}
         >
-          <div className={`${viewMode === 'list' ? 'w-1/3' : ''}`}>
+          <Link 
+            to={`/articles/${article.slug}`}
+            className={`block ${viewMode === 'list' ? 'w-1/3' : ''}`}
+          >
             <div className="aspect-video relative">
               <img
                 src={article.image}
@@ -60,7 +67,7 @@ const ArticleGrid = ({ viewMode }: { viewMode: 'grid' | 'list' }) => {
                 className="w-full h-full object-cover"
               />
             </div>
-          </div>
+          </Link>
           
           <div className={`p-6 ${viewMode === 'list' ? 'w-2/3' : ''}`}>
             <div className="flex gap-2 mb-3">
@@ -69,9 +76,11 @@ const ArticleGrid = ({ viewMode }: { viewMode: 'grid' | 'list' }) => {
               ))}
             </div>
             
-            <h3 className="text-xl font-bold text-accent mb-2 hover:text-primary transition-colors">
-              {article.title}
-            </h3>
+            <Link to={`/articles/${article.slug}`}>
+              <h3 className="text-xl font-bold text-accent mb-2 hover:text-primary transition-colors">
+                {article.title}
+              </h3>
+            </Link>
             <p className="text-accent/60 mb-4">{article.excerpt}</p>
             
             <div className="flex items-center justify-between text-sm text-accent/40">
