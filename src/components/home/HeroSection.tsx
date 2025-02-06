@@ -1,5 +1,6 @@
-import { ArrowRight, Rocket, Atom, Brain, Microscope, ChevronDown } from 'lucide-react';
+import { ArrowRight, Rocket, Atom, Brain, Microscope, ChevronDown, Search } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { motion } from 'framer-motion';
 
 const HeroSection = () => {
@@ -16,7 +17,7 @@ const HeroSection = () => {
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         
-        {/* Floating Icons with different animation speeds */}
+        {/* Floating Icons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 0.2, y: 0 }}
@@ -60,14 +61,27 @@ const HeroSection = () => {
           className="space-y-6"
         >
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-surface">
-            Discover the Wonders of
+            Explore the World of
             <span className="bg-gradient-to-r from-primary-light to-primary bg-clip-text text-transparent"> Science</span>
           </h1>
           
           <p className="mt-6 text-xl sm:text-2xl text-surface/80 max-w-3xl mx-auto">
-            Explore groundbreaking research, fascinating discoveries, and the latest scientific breakthroughs
+            Your gateway to scientific discovery, research, and understanding
           </p>
           
+          {/* Search Bar */}
+          <div className="max-w-2xl mx-auto mt-8">
+            <div className="relative">
+              <Input 
+                type="search"
+                placeholder="Search articles, topics, or ask a question..."
+                className="w-full pl-12 pr-4 py-3 rounded-full bg-white/90 backdrop-blur-sm border-2 border-surface/10 focus:border-primary"
+              />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            </div>
+          </div>
+
+          {/* Call to Action Buttons */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -78,7 +92,7 @@ const HeroSection = () => {
               size="lg"
               className="bg-primary hover:bg-primary-dark text-white group transition-all duration-300"
             >
-              Start Exploring
+              Start Learning
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
             <Button
@@ -86,11 +100,11 @@ const HeroSection = () => {
               variant="outline"
               className="border-surface text-surface hover:bg-surface/10"
             >
-              Watch Video
+              Join Community
             </Button>
           </motion.div>
 
-          {/* Stats Section */}
+          {/* Quick Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -98,10 +112,10 @@ const HeroSection = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16"
           >
             {[
-              { value: "1000+", label: "Articles" },
-              { value: "50K+", label: "Readers" },
-              { value: "100+", label: "Contributors" },
-              { value: "24/7", label: "Support" }
+              { value: "1000+", label: "Research Articles" },
+              { value: "50K+", label: "Active Learners" },
+              { value: "100+", label: "Expert Contributors" },
+              { value: "24/7", label: "Community Support" }
             ].map((stat, index) => (
               <div key={index} className="text-center">
                 <motion.div
@@ -120,15 +134,16 @@ const HeroSection = () => {
       </div>
 
       {/* Scroll Indicator */}
-      <motion.div
+      <motion.button
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 1 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer"
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none"
         onClick={scrollToContent}
+        aria-label="Scroll to content"
       >
         <ChevronDown className="w-8 h-8 text-surface animate-bounce" />
-      </motion.div>
+      </motion.button>
     </section>
   );
 };
