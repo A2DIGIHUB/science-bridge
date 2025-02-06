@@ -10,23 +10,23 @@ import {
 const carouselImages = [
   {
     src: "/lovable-uploads/821f2a41-9b51-48f0-96d6-612acee521ed.png",
-    alt: "Technology and science communication",
-    caption: "Bridging Technology and Science"
+    alt: "Technology and innovation",
+    caption: "Next-Gen Technology"
   },
   {
     src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
-    alt: "Scientist analyzing data",
-    caption: "Advancing Research Through Data Analysis"
+    alt: "Data analysis visualization",
+    caption: "Data-Driven Insights"
   },
   {
     src: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81",
     alt: "Scientific collaboration",
-    caption: "Fostering Scientific Collaboration"
+    caption: "Collaborative Innovation"
   },
   {
     src: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
-    alt: "Innovation in robotics",
-    caption: "Pushing Boundaries in Technology"
+    alt: "Robotics innovation",
+    caption: "Future of Tech"
   }
 ];
 
@@ -38,6 +38,7 @@ const HeroCarousel = () => {
       transition={{ duration: 0.8, delay: 0.4 }}
       className="relative"
     >
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-1000"></div>
       <Carousel className="w-full max-w-xl mx-auto">
         <CarouselContent>
           {carouselImages.map((image, index) => (
@@ -46,17 +47,17 @@ const HeroCarousel = () => {
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                  <p className="text-white text-sm font-medium">{image.caption}</p>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                  <p className="text-white text-lg font-medium">{image.caption}</p>
                 </div>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden md:flex" />
-        <CarouselNext className="hidden md:flex" />
+        <CarouselPrevious className="hidden md:flex -left-12 bg-white/10 hover:bg-white/20 border-0" />
+        <CarouselNext className="hidden md:flex -right-12 bg-white/10 hover:bg-white/20 border-0" />
       </Carousel>
     </motion.div>
   );
