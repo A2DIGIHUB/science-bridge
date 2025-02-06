@@ -13,7 +13,7 @@ const HeroContent = () => {
     >
       <div className="space-y-4">
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white leading-tight">
-          Transform Your Tech Knowledge Into 
+          Science Through 
           <span className="bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] bg-clip-text text-transparent"> Innovation</span>
         </h1>
         
