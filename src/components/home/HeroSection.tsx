@@ -20,29 +20,29 @@ const HeroSection = () => {
 
   const carouselImages = [
     {
-      src: "/photo-1581091226825-a6a2a5aee158",
+      src: "/lovable-uploads/821f2a41-9b51-48f0-96d6-612acee521ed.png",
+      alt: "Technology and science communication",
+      caption: "Bridging Technology and Science"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
       alt: "Scientist analyzing data",
       caption: "Advancing Research Through Data Analysis"
     },
     {
-      src: "/photo-1605810230434-7631ac76ec81",
+      src: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81",
       alt: "Scientific collaboration",
       caption: "Fostering Scientific Collaboration"
     },
     {
-      src: "/photo-1485827404703-89b55fcc595e",
+      src: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
       alt: "Innovation in robotics",
       caption: "Pushing Boundaries in Technology"
-    },
-    {
-      src: "/photo-1581090464777-f3220bbe1b8b",
-      alt: "Innovation and ideas",
-      caption: "Illuminating New Discoveries"
     }
   ];
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-accent via-accent/95 to-accent/90">
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#1A1F2C] via-[#1A1F2C]/95 to-[#1A1F2C]/90">
       {/* Background Pattern */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -54,7 +54,7 @@ const HeroSection = () => {
           transition={{ duration: 1, delay: 0.2 }}
           className="absolute top-1/4 left-1/4 animate-float-slow"
         >
-          <Atom className="w-16 h-16 text-surface" />
+          <Atom className="w-16 h-16 text-[#9b87f5]" />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -62,7 +62,7 @@ const HeroSection = () => {
           transition={{ duration: 1, delay: 0.4 }}
           className="absolute top-1/3 right-1/4 animate-float-medium"
         >
-          <Brain className="w-20 h-20 text-surface" />
+          <Brain className="w-20 h-20 text-[#7E69AB]" />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -70,7 +70,7 @@ const HeroSection = () => {
           transition={{ duration: 1, delay: 0.6 }}
           className="absolute bottom-1/4 left-1/3 animate-float-fast"
         >
-          <Microscope className="w-14 h-14 text-surface" />
+          <Microscope className="w-14 h-14 text-[#6E59A5]" />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -78,7 +78,7 @@ const HeroSection = () => {
           transition={{ duration: 1, delay: 0.8 }}
           className="absolute top-1/2 right-1/3 animate-float-medium"
         >
-          <Rocket className="w-18 h-18 text-surface" />
+          <Rocket className="w-18 h-18 text-[#D6BCFA]" />
         </motion.div>
       </div>
 
@@ -92,13 +92,13 @@ const HeroSection = () => {
             transition={{ duration: 0.8 }}
             className="space-y-6"
           >
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-surface">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white">
               Explore the World of
-              <span className="bg-gradient-to-r from-primary-light to-primary bg-clip-text text-transparent"> Science</span>
+              <span className="bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] bg-clip-text text-transparent"> Technology</span>
             </h1>
             
-            <p className="mt-6 text-xl sm:text-2xl text-surface/80 max-w-3xl">
-              Your gateway to scientific discovery, research, and understanding
+            <p className="mt-6 text-xl sm:text-2xl text-[#F1F0FB]/80 max-w-3xl">
+              Your gateway to technological innovation, research, and understanding
             </p>
             
             {/* Search Bar */}
@@ -107,7 +107,7 @@ const HeroSection = () => {
                 <Input 
                   type="search"
                   placeholder="Search articles, topics, or ask a question..."
-                  className="w-full pl-12 pr-4 py-3 rounded-full bg-white/90 backdrop-blur-sm border-2 border-surface/10 focus:border-primary"
+                  className="w-full pl-12 pr-4 py-3 rounded-full bg-white/90 backdrop-blur-sm border-2 border-[#9b87f5]/10 focus:border-[#9b87f5]"
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
@@ -122,7 +122,7 @@ const HeroSection = () => {
             >
               <Button 
                 size="lg"
-                className="bg-primary hover:bg-primary-dark text-white group transition-all duration-300"
+                className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white group transition-all duration-300"
               >
                 Start Learning
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -130,7 +130,7 @@ const HeroSection = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-surface text-surface hover:bg-surface/10"
+                className="border-[#D6BCFA] text-[#D6BCFA] hover:bg-[#D6BCFA]/10"
               >
                 Join Community
               </Button>
@@ -168,32 +168,31 @@ const HeroSection = () => {
         </div>
 
         {/* Quick Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16"
-          >
-            {[
-              { value: "1000+", label: "Research Articles" },
-              { value: "50K+", label: "Active Learners" },
-              { value: "100+", label: "Expert Contributors" },
-              { value: "24/7", label: "Community Support" }
-            ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <motion.div
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-                  className="text-4xl font-bold text-primary-light"
-                >
-                  {stat.value}
-                </motion.div>
-                <div className="text-sm text-surface/60 mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
-
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16"
+        >
+          {[
+            { value: "1000+", label: "Research Articles" },
+            { value: "50K+", label: "Active Learners" },
+            { value: "100+", label: "Expert Contributors" },
+            { value: "24/7", label: "Community Support" }
+          ].map((stat, index) => (
+            <div key={index} className="text-center">
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                className="text-4xl font-bold text-[#9b87f5]"
+              >
+                {stat.value}
+              </motion.div>
+              <div className="text-sm text-[#D6BCFA]/60 mt-1">{stat.label}</div>
+            </div>
+          ))}
+        </motion.div>
       </div>
 
       {/* Scroll Indicator */}
@@ -205,7 +204,7 @@ const HeroSection = () => {
         onClick={scrollToContent}
         aria-label="Scroll to content"
       >
-        <ChevronDown className="w-8 h-8 text-surface animate-bounce" />
+        <ChevronDown className="w-8 h-8 text-[#D6BCFA] animate-bounce" />
       </motion.button>
     </section>
   );
