@@ -27,15 +27,7 @@ const NewsletterSection = () => {
     setInterests([]);
   };
 
-  const interestAreas = [
-    { id: "physics", label: "Physics & Astronomy" },
-    { id: "biology", label: "Biology & Life Sciences" },
-    { id: "tech", label: "Technology & AI" },
-    { id: "environment", label: "Environmental Science" },
-    { id: "chemistry", label: "Chemistry" },
-    { id: "medicine", label: "Medicine & Health" },
-  ];
-
+  
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-accent/5">
       <div className="max-w-7xl mx-auto">
