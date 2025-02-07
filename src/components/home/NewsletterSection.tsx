@@ -74,7 +74,6 @@ const NewsletterSection = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Input */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Input
                   type="email"
@@ -88,7 +87,6 @@ const NewsletterSection = () => {
                 </Button>
               </div>
 
-              {/* Interest Areas */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-accent">Select Your Areas of Interest</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -116,7 +114,6 @@ const NewsletterSection = () => {
                 </div>
               </div>
 
-              {/* Benefits */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 {[
                   {
