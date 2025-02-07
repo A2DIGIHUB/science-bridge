@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { ArrowRight, Search } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,10 @@ const HeroContent = () => {
     >
       <div className="space-y-4">
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white leading-tight">
-          Science  
-          <span className="bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] bg-clip-text text-transparent">Communication</span>
+          TEXN
+          <span className="bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] bg-clip-text text-transparent">
+            Technology
+          </span>
         </h1>
         
         <p className="text-xl sm:text-2xl text-[#F1F0FB]/90 font-light max-w-2xl">
@@ -27,7 +30,7 @@ const HeroContent = () => {
           size="lg"
           className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white group transition-all duration-300 text-lg px-8 py-6"
         >
-          Start Learning
+          Get Started
           <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
         </Button>
         <Button

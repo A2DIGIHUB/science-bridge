@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import {
   Carousel,
@@ -8,11 +9,6 @@ import {
 } from "@/components/ui/carousel";
 
 const carouselImages = [
-  {
-    src: "/lovable-uploads/821f2a41-9b51-48f0-96d6-612acee521ed.png",
-    alt: "Technology and innovation",
-    caption: "Next-Gen Technology"
-  },
   {
     src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
     alt: "Data analysis visualization",
@@ -27,6 +23,11 @@ const carouselImages = [
     src: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
     alt: "Robotics innovation",
     caption: "Future of Tech"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1581094794329-c8112a89af12",
+    alt: "Technology innovation",
+    caption: "Next-Gen Technology"
   }
 ];
 
