@@ -1,9 +1,37 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+
+const interestAreas = [
+  {
+    id: "quantum-computing",
+    label: "Quantum Computing"
+  },
+  {
+    id: "artificial-intelligence",
+    label: "Artificial Intelligence"
+  },
+  {
+    id: "biotechnology",
+    label: "Biotechnology"
+  },
+  {
+    id: "space-exploration",
+    label: "Space Exploration"
+  },
+  {
+    id: "climate-science",
+    label: "Climate Science"
+  },
+  {
+    id: "neuroscience",
+    label: "Neuroscience"
+  }
+];
 
 const NewsletterSection = () => {
   const [email, setEmail] = useState("");
@@ -27,7 +55,6 @@ const NewsletterSection = () => {
     setInterests([]);
   };
 
-  
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-accent/5">
       <div className="max-w-7xl mx-auto">
