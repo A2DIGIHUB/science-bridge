@@ -7,6 +7,7 @@ import PopularTags from '../components/home/PopularTags';
 import CommunitySection from '../components/home/CommunitySection';
 import QuizSection from '../components/home/QuizSection';
 import VideoSection from '../components/home/VideoSection';
+import CTASection from '../components/home/CTASection';
 
 const Index = () => {
   return (
@@ -56,6 +57,9 @@ const Index = () => {
           <VideoSection />
           <CommunitySection />
         </div>
+
+        {/* CTA Section */}
+        <CTASection />
       </main>
     </div>
   );
