@@ -1,7 +1,7 @@
+
 import { motion } from 'framer-motion';
 import HeroSection from '../components/home/HeroSection';
 import FeaturedArticles from '../components/home/FeaturedArticles';
-import NewsletterSection from '../components/home/NewsletterSection';
 import RecentPosts from '../components/home/RecentPosts';
 import PopularTags from '../components/home/PopularTags';
 import CommunitySection from '../components/home/CommunitySection';
@@ -48,7 +48,6 @@ const Index = () => {
             >
               <div className="sticky top-24 space-y-8">
                 <PopularTags />
-                <NewsletterSection />
               </div>
             </motion.div>
           </div>
