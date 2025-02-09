@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search } from 'lucide-react';
+import { Menu, X, Search, Facebook, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navigation = () => {
@@ -19,6 +20,14 @@ const Navigation = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const socialLinks = [
+    { icon: Facebook, href: 'https://facebook.com', label: 'Facebook' },
+    { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
+    { icon: Instagram, href: 'https://instagram.com', label: 'Instagram' },
+    { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
+    { icon: Youtube, href: 'https://youtube.com', label: 'YouTube' }
+  ];
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -29,7 +38,7 @@ const Navigation = () => {
     >
       <div className="w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
+          <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center">
               <motion.span 
                 className="text-xl font-bold text-primary"
@@ -39,33 +48,56 @@ const Navigation = () => {
                 TEXN
               </motion.span>
             </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex md:items-center md:space-x-8">
+              {[
+                { path: '/', label: 'Home' },
+                { path: '/articles', label: 'Articles' },
+                { path: '/about', label: 'About' }
+              ].map(({ path, label }) => (
+                <Link 
+                  key={path} 
+                  to={path}
+                  className={`nav-link relative ${
+                    location.pathname === path ? 'text-primary' : 'text-gray-600'
+                  }`}
+                >
+                  {label}
+                  {location.pathname === path && (
+                    <motion.div
+                      layoutId="navbar-indicator"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              ))}
+            </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
-            {[
-              { path: '/', label: 'Home' },
-              { path: '/articles', label: 'Articles' },
-              { path: '/about', label: 'About' }
-            ].map(({ path, label }) => (
-              <Link 
-                key={path} 
-                to={path}
-                className={`nav-link relative ${
-                  location.pathname === path ? 'text-primary' : 'text-gray-600'
-                }`}
-              >
-                {label}
-                {location.pathname === path && (
-                  <motion.div
-                    layoutId="navbar-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                  />
-                )}
-              </Link>
-            ))}
+          {/* Right side navigation items */}
+          <div className="hidden md:flex md:items-center md:space-x-6">
+            {/* Social Media Icons */}
+            <div className="flex items-center space-x-4">
+              {socialLinks.map(({ icon: Icon, href, label }) => (
+                <motion.a
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 hover:text-primary transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title={label}
+                >
+                  <Icon className="w-5 h-5" />
+                </motion.a>
+              ))}
+            </div>
+
+            {/* Search Button */}
             <motion.button 
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -120,6 +152,24 @@ const Navigation = () => {
                   {label}
                 </Link>
               ))}
+              
+              {/* Mobile Social Links */}
+              <div className="mt-4 flex justify-center space-x-6 py-4 border-t border-gray-200">
+                {socialLinks.map(({ icon: Icon, href, label }) => (
+                  <motion.a
+                    key={href}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-600 hover:text-primary transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    title={label}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </motion.a>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
