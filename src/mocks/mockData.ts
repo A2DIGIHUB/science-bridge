@@ -1,3 +1,5 @@
+import { articleImages } from '../assets/images';
+
 export const mockArticles = [
   {
     id: 1,
@@ -5,7 +7,7 @@ export const mockArticles = [
     title: "The Future of Quantum Computing",
     excerpt: "Exploring the latest breakthroughs in quantum computing and their implications...",
     content: "Full article content here...",
-    image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb",
+    image: articleImages.quantumComputing,
     category: "physics",
     tags: ["quantum", "technology"],
     author: "Dr. Sarah Smith",
@@ -22,7 +24,7 @@ export const mockArticles = [
     title: "Understanding CRISPR Technology",
     excerpt: "A deep dive into how CRISPR gene editing is revolutionizing medicine...",
     content: "Full article content here...",
-    image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69",
+    image: articleImages.crisprTechnology,
     category: "health",
     tags: ["genetics", "medicine"],
     author: "Prof. John Doe",
@@ -39,7 +41,7 @@ export const mockArticles = [
     title: "Black Holes: New Discoveries",
     excerpt: "Recent observations have revealed fascinating new details about black holes...",
     content: "Full article content here...",
-    image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564",
+    image: articleImages.blackHoles,
     category: "space",
     tags: ["astronomy", "physics"],
     author: "Dr. Michael Brown",
