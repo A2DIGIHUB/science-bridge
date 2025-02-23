@@ -22,7 +22,8 @@ create table if not exists authors (
   credentials text,
   bio text,
   avatar_url text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  is_admin boolean default false
 );
 
 -- Categories table
@@ -82,64 +83,91 @@ insert into categories (name, slug, description) values
   ('Health', 'health', 'Medical science and healthcare')
 on conflict (slug) do nothing;
 
--- Add RLS (Row Level Security) policies
+-- Enable RLS
 alter table authors enable row level security;
+alter table posts enable row level security;
 alter table categories enable row level security;
 alter table tags enable row level security;
-alter table posts enable row level security;
 alter table posts_tags enable row level security;
 
--- Policies for authors
+-- Authors policies
 create policy "Public authors are viewable by everyone"
-  on authors for select
-  using (true);
+on authors for select
+using (true);
 
-create policy "Authors can be created by authenticated users"
-  on authors for insert
-  with check (auth.role() = 'authenticated');
+create policy "Authors can only be created by admin"
+on authors for insert
+using (auth.jwt()->>'email' in (select credentials from authors where is_admin = true));
 
--- Policies for categories
-create policy "Categories are viewable by everyone"
-  on categories for select
-  using (true);
-
-create policy "Categories can be created by authenticated users"
-  on categories for insert
-  with check (auth.role() = 'authenticated');
-
--- Policies for tags
-create policy "Tags are viewable by everyone"
-  on tags for select
-  using (true);
-
-create policy "Tags can be created by authenticated users"
-  on tags for insert
-  with check (auth.role() = 'authenticated');
-
--- Policies for posts
+-- Posts policies
 create policy "Published posts are viewable by everyone"
-  on posts for select
-  using (status = 'published');
+on posts for select
+using (status = 'published');
 
-create policy "Posts can be created by authenticated users"
-  on posts for insert
-  with check (auth.role() = 'authenticated');
+create policy "Posts can only be created by authors"
+on posts for insert
+using (
+  auth.jwt()->>'email' in (
+    select credentials 
+    from authors 
+    where id = auth.uid()
+  )
+);
 
-create policy "Posts can be updated by their authors"
-  on posts for update
-  using (auth.uid()::text = author_id::text);
+create policy "Posts can only be updated by their authors or admins"
+on posts for update
+using (
+  auth.jwt()->>'email' in (
+    select credentials 
+    from authors 
+    where id = auth.uid() 
+    or is_admin = true
+  )
+);
 
--- Policies for posts_tags
+-- Categories policies
+create policy "Categories are viewable by everyone"
+on categories for select
+using (true);
+
+create policy "Categories can only be managed by admins"
+on categories for insert update delete
+using (
+  auth.jwt()->>'email' in (
+    select credentials 
+    from authors 
+    where is_admin = true
+  )
+);
+
+-- Tags policies
+create policy "Tags are viewable by everyone"
+on tags for select
+using (true);
+
+create policy "Tags can only be managed by admins"
+on tags for insert update delete
+using (
+  auth.jwt()->>'email' in (
+    select credentials 
+    from authors 
+    where is_admin = true
+  )
+);
+
+-- Posts_tags policies
 create policy "Posts tags are viewable by everyone"
-  on posts_tags for select
-  using (true);
+on posts_tags for select
+using (true);
 
-create policy "Posts tags can be modified by post authors"
-  on posts_tags for insert
-  with check (
-    exists (
-      select 1 from posts
-      where id = post_id
-      and auth.uid()::text = author_id::text
-    )
-  );
+create policy "Posts tags can only be modified by post authors or admins"
+on posts_tags for insert update delete
+using (
+  auth.jwt()->>'email' in (
+    select a.credentials 
+    from authors a
+    join posts p on p.author_id = a.id
+    where p.id = post_id 
+    or a.is_admin = true
+  )
+);
