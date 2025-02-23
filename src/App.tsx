@@ -1,30 +1,32 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navigation from './components/Navigation';
-import Index from './pages/Index';
-import Articles from './pages/Articles';
-import ArticleDetail from './pages/ArticleDetail';
-import About from './pages/About';
-import NotFound from './pages/NotFound';
-import Footer from './components/Footer';
-import './App.css';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
+import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
+import AppRoutes from './routes';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
 
 function App() {
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen">
-        <Navigation />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/articles" element={<Articles />} />
-            <Route path="/articles/:slug" element={<ArticleDetail />} />
-            <Route path="/about" element={<About />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-grow pt-[120px]"> {/* Adjusted padding-top to account for both navbar layers */}
+            <AppRoutes />
+          </main>
+          <Footer />
+        </div>
+      </Router>
+      <Toaster position="bottom-right" />
+    </QueryClientProvider>
   );
 }
 

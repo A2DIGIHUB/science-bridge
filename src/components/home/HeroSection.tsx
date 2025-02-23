@@ -1,4 +1,3 @@
-
 import { ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import HeroBackground from './hero/HeroBackground';
@@ -15,16 +14,23 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+    <section className="relative min-h-[calc(100vh-120px)] flex flex-col items-center justify-center overflow-hidden">
       <HeroBackground />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <HeroContent />
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <HeroContent />
+          </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            className="relative"
           >
             <HeroCarousel />
           </motion.div>
@@ -34,6 +40,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-12"
         >
           <HeroStats />
         </motion.div>
@@ -43,7 +50,7 @@ const HeroSection = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.6 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none"
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none hover:text-primary transition-colors"
         onClick={scrollToContent}
         aria-label="Scroll to content"
       >

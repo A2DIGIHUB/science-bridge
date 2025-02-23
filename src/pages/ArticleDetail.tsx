@@ -1,98 +1,82 @@
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ThumbsUp, Share2, Bookmark } from 'lucide-react';
-
-// This would typically come from an API or database
-const getArticleBySlug = (slug: string) => {
-  const articles = {
-    'future-of-quantum-computing': {
-      id: 1,
-      title: "The Future of Quantum Computing",
-      content: `
-        <p>Quantum computing represents a fundamental shift in how we process information. Unlike classical computers that use bits (0s and 1s), quantum computers leverage quantum bits or qubits, which can exist in multiple states simultaneously thanks to the principles of quantum mechanics.</p>
-        <h2>Recent Breakthroughs</h2>
-        <p>Recent advances in quantum computing have brought us closer to achieving quantum supremacy - the point at which quantum computers can solve problems that classical computers practically cannot.</p>
-        <h2>Practical Applications</h2>
-        <p>The implications of quantum computing span across multiple industries:</p>
-        <ul>
-          <li>Cryptography and security</li>
-          <li>Drug discovery and development</li>
-          <li>Climate modeling and weather prediction</li>
-          <li>Financial modeling and optimization</li>
-        </ul>
-      `,
-      excerpt: "Exploring the latest breakthroughs in quantum computing and their implications...",
-      image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb",
-      category: "Physics",
-      tags: ["Quantum", "Technology"],
-      author: "Dr. Sarah Smith",
-      date: "2024-02-15",
-      readTime: "5 min",
-      likes: 234,
-      views: 1205,
-    },
-    'understanding-crispr-technology': {
-      id: 2,
-      title: "Understanding CRISPR Technology",
-      content: `
-        <p>CRISPR gene editing technology has revolutionized our ability to modify DNA with precision and efficiency never before possible.</p>
-        <h2>How CRISPR Works</h2>
-        <p>At its core, CRISPR uses a protein called Cas9 that acts like molecular scissors, capable of cutting DNA at specific locations.</p>
-        <h2>Medical Applications</h2>
-        <p>The potential applications in medicine are vast:</p>
-        <ul>
-          <li>Treating genetic disorders</li>
-          <li>Developing new cancer therapies</li>
-          <li>Creating disease-resistant crops</li>
-          <li>Advancing biotechnology research</li>
-        </ul>
-      `,
-      excerpt: "A deep dive into how CRISPR gene editing is revolutionizing medicine...",
-      image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69",
-      category: "Health",
-      tags: ["Genetics", "Medicine"],
-      author: "Prof. John Doe",
-      date: "2024-02-14",
-      readTime: "7 min",
-      likes: 189,
-      views: 892,
-    },
-    'black-holes-new-discoveries': {
-      id: 3,
-      title: "Black Holes: New Discoveries",
-      content: `
-        <p>Recent observations have revealed fascinating new details about black holes, challenging our understanding of these cosmic phenomena.</p>
-        <h2>Event Horizon Observations</h2>
-        <p>The Event Horizon Telescope has provided unprecedented views of black holes, allowing scientists to study their properties in detail.</p>
-        <h2>Implications for Physics</h2>
-        <p>These discoveries have significant implications for:</p>
-        <ul>
-          <li>General relativity</li>
-          <li>Quantum mechanics</li>
-          <li>The nature of spacetime</li>
-          <li>The evolution of galaxies</li>
-        </ul>
-      `,
-      excerpt: "Recent observations have revealed fascinating new details about black holes...",
-      image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564",
-      category: "Space",
-      tags: ["Astronomy", "Physics"],
-      author: "Dr. Michael Brown",
-      date: "2024-02-13",
-      readTime: "6 min",
-      likes: 312,
-      views: 1567,
-    }
-  };
-  
-  return articles[slug as keyof typeof articles];
-};
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { articlesApi } from '../services/api';
+import { Spinner } from '../components/ui/spinner';
+import { toast } from 'react-hot-toast';
 
 const ArticleDetail = () => {
   const { slug } = useParams();
-  const article = getArticleBySlug(slug || '');
+  const queryClient = useQueryClient();
 
-  if (!article) {
+  const { data: article, isLoading, error } = useQuery({
+    queryKey: ['article', slug],
+    queryFn: () => articlesApi.getArticleBySlug(slug || ''),
+    enabled: !!slug,
+  });
+
+  const likeMutation = useMutation({
+    mutationFn: articlesApi.likeArticle,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['article', slug] });
+    },
+  });
+
+  const bookmarkMutation = useMutation({
+    mutationFn: articlesApi.bookmarkArticle,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['article', slug] });
+    },
+  });
+
+  const handleLike = async () => {
+    if (!article) return;
+    try {
+      await likeMutation.mutateAsync(article.id);
+      toast.success(article.isLiked ? 'Removed like' : 'Article liked!');
+    } catch (error) {
+      toast.error('Failed to like article');
+    }
+  };
+
+  const handleBookmark = async () => {
+    if (!article) return;
+    try {
+      await bookmarkMutation.mutateAsync(article.id);
+      toast.success(article.isBookmarked ? 'Removed from bookmarks' : 'Article bookmarked!');
+    } catch (error) {
+      toast.error('Failed to bookmark article');
+    }
+  };
+
+  const handleShare = async () => {
+    if (!article) return;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: article.title,
+          text: article.excerpt,
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (error) {
+      toast.error('Failed to share article');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-24 px-4 flex justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (error || !article) {
     return (
       <div className="min-h-screen pt-24 px-4">
         <div className="max-w-3xl mx-auto">
@@ -130,10 +114,16 @@ const ArticleDetail = () => {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <button className="hover:text-primary transition-colors">
+              <button 
+                onClick={handleShare}
+                className="hover:text-primary transition-colors"
+              >
                 <Share2 className="h-5 w-5" />
               </button>
-              <button className="hover:text-primary transition-colors">
+              <button 
+                onClick={handleBookmark}
+                className={`transition-colors ${article.isBookmarked ? 'text-primary' : 'hover:text-primary'}`}
+              >
                 <Bookmark className="h-5 w-5" />
               </button>
             </div>
@@ -155,13 +145,21 @@ const ArticleDetail = () => {
         <footer className="mt-8 pt-8 border-t">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1 text-accent/60 hover:text-primary transition-colors">
+              <button 
+                onClick={handleLike}
+                className={`flex items-center gap-1 transition-colors ${
+                  article.isLiked ? 'text-primary' : 'text-accent/60 hover:text-primary'
+                }`}
+              >
                 <ThumbsUp className="h-5 w-5" />
                 <span>{article.likes}</span>
               </button>
             </div>
             <div className="flex items-center gap-3">
-              <button className="button-primary">
+              <button 
+                onClick={handleShare}
+                className="button-primary"
+              >
                 Share Article
               </button>
             </div>
