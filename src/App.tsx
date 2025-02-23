@@ -7,6 +7,7 @@ import { BlogList } from './components/blog/BlogList';
 import { BlogPost } from './components/blog/BlogPost';
 import { BlogCreate } from './components/blog/BlogCreate';
 import { RequireAuthor } from './components/auth/RequireAuthor';
+import { AuthCallback } from './components/auth/AuthCallback';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,7 @@ function App() {
                 } 
               />
               <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
             </Routes>
           </main>
           <Footer />
