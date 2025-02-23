@@ -1,14 +1,16 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { Post } from '../../types/supabase';
+import type { Post, Tables } from '../../types/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { formatDistanceToNow } from 'date-fns';
 import { BlogFilter } from './BlogFilter';
-import { Pencil } from 'lucide-react';
+import { FeaturedPosts } from './FeaturedPosts';
+import { Pencil, ArrowRight } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 
 export function BlogList() {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ export function BlogList() {
     categories: [] as string[],
     tags: [] as string[]
   });
+  const [activeTab, setActiveTab] = useState('all');
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -32,7 +35,7 @@ export function BlogList() {
           category:categories(*),
           tags:posts_tags(tag:tags(*))
         `)
-        .eq('status', 'published')
+        .eq('status', 'published' as const)
         .order('published_at', { ascending: false });
 
       if (filters.search) {
@@ -40,15 +43,18 @@ export function BlogList() {
       }
 
       if (filters.categories.length > 0) {
-        query = query.in('category_id', filters.categories);
+        query = query.in('category_id', filters.categories as string[]);
       }
 
       if (filters.tags.length > 0) {
-        query = query.in('id', (sb) =>
-          sb.from('posts_tags')
-            .select('post_id')
-            .in('tag_id', filters.tags)
-        );
+        const { data: postIds } = await supabase
+          .from('posts_tags')
+          .select('post_id')
+          .in('tag_id', filters.tags as string[]);
+
+        if (postIds) {
+          query = query.in('id', postIds.map(p => p.post_id));
+        }
       }
 
       const { data, error: fetchError } = await query;
@@ -69,7 +75,7 @@ export function BlogList() {
   useEffect(() => {
     async function checkAuthorStatus() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      if (user?.email) {
         const { data } = await supabase
           .from('authors')
           .select('*')
@@ -89,95 +95,166 @@ export function BlogList() {
     </div>
   );
 
+  const filteredPosts = posts.filter(post => {
+    if (activeTab === 'all') return true;
+    return post.category?.name.toLowerCase() === activeTab;
+  });
+
+  const categories = Array.from(new Set(posts.map(post => post.category?.name))).filter(Boolean);
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold">Science Blog</h1>
-        {isAuthor && (
-          <Button onClick={() => navigate('/blog/create')} className="flex items-center">
-            <Pencil className="mr-2 h-4 w-4" />
-            Create Post
-          </Button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <aside className="lg:col-span-1">
-          <BlogFilter onFilterChange={setFilters} />
-        </aside>
-
-        <main className="lg:col-span-3">
-          {loading ? (
-            <div className="grid grid-cols-1 gap-6">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardHeader className="space-y-4">
-                    <div className="h-4 bg-muted rounded w-1/4"></div>
-                    <div className="h-6 bg-muted rounded w-3/4"></div>
-                    <div className="h-4 bg-muted rounded w-2/3"></div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-4 bg-muted rounded w-1/4"></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : posts.length === 0 ? (
-            <Card className="p-8 text-center">
-              <CardHeader>
-                <CardTitle>No posts found</CardTitle>
-                <CardDescription>
-                  Try adjusting your filters or check back later for new content.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 gap-6">
-              {posts.map((post) => (
-                <Card 
-                  key={post.id} 
-                  className="group cursor-pointer hover:bg-accent/50 transition-colors"
-                  onClick={() => navigate(`/blog/${post.slug}`)}
-                >
-                  <CardHeader className="space-y-4">
-                    <div className="flex items-center space-x-4">
-                      <Avatar>
-                        <AvatarImage src={post.author?.avatar_url} />
-                        <AvatarFallback>{post.author?.name?.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium">{post.author?.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {post.published_at && formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
-                        </p>
-                      </div>
-                    </div>
-                    <CardTitle className="group-hover:text-primary transition-colors">
-                      {post.title}
-                    </CardTitle>
-                    <CardDescription>
-                      {post.content?.excerpt}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex gap-2 flex-wrap">
-                      {post.category && (
-                        <Badge variant="secondary" className="group-hover:bg-secondary/80">
-                          {post.category.name}
-                        </Badge>
-                      )}
-                      {post.tags?.map(({ tag }) => (
-                        <Badge key={tag.id} variant="outline" className="group-hover:bg-accent">
-                          {tag.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
+      <div className="container mx-auto px-4 py-12">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-foreground">
+            Science Bridge Blog
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Explore the latest discoveries, innovations, and breakthroughs in science and technology.
+          </p>
+          {isAuthor && (
+            <Button 
+              onClick={() => navigate('/blog/create')} 
+              className="mt-6"
+              size="lg"
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              Create New Post
+            </Button>
           )}
-        </main>
+        </div>
+
+        {/* Featured Posts */}
+        {!loading && !filters.search && filters.categories.length === 0 && filters.tags.length === 0 && (
+          <FeaturedPosts posts={posts} />
+        )}
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Sidebar */}
+          <aside className="lg:col-span-1 space-y-8">
+            <BlogFilter onFilterChange={setFilters} />
+            
+            {/* Popular Tags Section */}
+            <Card className="bg-card/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle>Popular Tags</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-2">
+                {Array.from(new Set(posts.flatMap(post => post.tags?.map(t => t.tag)))).slice(0, 8).map(tag => (
+                  <Badge 
+                    key={tag?.id} 
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-primary/20"
+                    onClick={() => setFilters(prev => ({
+                      ...prev,
+                      tags: [...prev.tags, tag?.id || '']
+                    }))}
+                  >
+                    {tag?.name}
+                  </Badge>
+                ))}
+              </CardContent>
+            </Card>
+          </aside>
+
+          {/* Main Content */}
+          <main className="lg:col-span-3">
+            {/* Category Tabs */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+              <TabsList className="w-full justify-start overflow-x-auto">
+                <TabsTrigger value="all">All Posts</TabsTrigger>
+                {categories.map(category => (
+                  <TabsTrigger key={category} value={category?.toLowerCase() || ''}>
+                    {category}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+
+            {/* Posts Grid */}
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardHeader className="space-y-4">
+                      <div className="h-4 bg-muted rounded w-1/4"></div>
+                      <div className="h-6 bg-muted rounded w-3/4"></div>
+                      <div className="h-4 bg-muted rounded w-2/3"></div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-4 bg-muted rounded w-1/4"></div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : filteredPosts.length === 0 ? (
+              <Card className="p-8 text-center bg-card/50 backdrop-blur">
+                <CardHeader>
+                  <CardTitle>No posts found</CardTitle>
+                  <CardDescription>
+                    Try adjusting your filters or check back later for new content.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredPosts.map((post) => (
+                  <Card 
+                    key={post.id} 
+                    className="group cursor-pointer overflow-hidden bg-card/50 backdrop-blur hover:bg-card transition-colors"
+                    onClick={() => navigate(`/blog/${post.slug}`)}
+                  >
+                    {/* Post Image */}
+                    <div className="relative h-48 overflow-hidden">
+                      <img 
+                        src={post.cover_image || 'https://source.unsplash.com/random/800x600/?science'} 
+                        alt={post.title}
+                        className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                    </div>
+
+                    <CardHeader className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Badge variant="secondary" className="bg-primary/10">
+                          {post.category?.name}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {post.published_at && formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
+                        </span>
+                      </div>
+
+                      <CardTitle className="group-hover:text-primary transition-colors line-clamp-2">
+                        {post.title}
+                      </CardTitle>
+
+                      <CardDescription className="line-clamp-2">
+                        {post.content?.excerpt}
+                      </CardDescription>
+                    </CardHeader>
+
+                    <CardContent>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={post.author?.avatar_url || undefined} />
+                            <AvatarFallback>{post.author?.name?.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm font-medium">{post.author?.name}</span>
+                        </div>
+                        <Button variant="ghost" size="sm" className="group-hover:translate-x-1 transition-transform">
+                          Read More <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );

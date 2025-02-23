@@ -14,6 +14,5 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     detectSessionInUrl: true,
     flowType: 'pkce',
-    redirectTo: 'https://science-bridge.vercel.app/auth/callback'
   }
 });

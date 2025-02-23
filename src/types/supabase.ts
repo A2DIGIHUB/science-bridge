@@ -66,10 +66,11 @@ export interface Database {
           content: Json
           author_id: string | null
           category_id: string | null
-          status: string
+          status: "draft" | "published"
           published_at: string | null
           created_at: string
           updated_at: string
+          cover_image: string | null
           search_vector: unknown | null
         }
         Insert: {
@@ -79,10 +80,11 @@ export interface Database {
           content: Json
           author_id?: string | null
           category_id?: string | null
-          status?: string
+          status?: "draft" | "published"
           published_at?: string | null
           created_at?: string
           updated_at?: string
+          cover_image?: string | null
         }
         Update: {
           id?: string
@@ -91,40 +93,47 @@ export interface Database {
           content?: Json
           author_id?: string | null
           category_id?: string | null
-          status?: string
+          status?: "draft" | "published"
           published_at?: string | null
           created_at?: string
           updated_at?: string
+          cover_image?: string | null
         }
       }
       posts_tags: {
         Row: {
           post_id: string
           tag_id: string
+          created_at: string
         }
         Insert: {
           post_id: string
           tag_id: string
+          created_at?: string
         }
         Update: {
           post_id?: string
           tag_id?: string
+          created_at?: string
         }
       }
       tags: {
         Row: {
           id: string
           name: string
+          slug: string
           created_at: string
         }
         Insert: {
           id?: string
           name: string
+          slug: string
           created_at?: string
         }
         Update: {
           id?: string
           name?: string
+          slug?: string
           created_at?: string
         }
       }
@@ -138,5 +147,21 @@ export interface Database {
     Enums: {
       [_ in never]: never
     }
+  }
+}
+
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
+export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T]
+
+// Custom types for our components
+export interface Post extends Tables<'posts'> {
+  author?: Tables<'authors'>
+  category?: Tables<'categories'>
+  tags?: Array<{
+    tag: Tables<'tags'>
+  }>
+  content?: {
+    body: string
+    excerpt: string
   }
 }
