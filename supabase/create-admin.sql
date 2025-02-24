@@ -7,7 +7,7 @@ insert into authors (
   is_admin
 ) values (
   'A2DIGIHUB Admin',
-  'admin@a2digihub.com',  -- Replace this with the email you used to create the user
+  'generalchrist@gmail.com',  -- Your email address that you used to sign up
   'Lead Science Writer and Content Manager at A2DIGIHUB',
   'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
   true
