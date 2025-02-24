@@ -1,73 +1,83 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, Clock, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-const featuredArticles = [
-  {
-    title: "Quantum Computing Breakthrough",
-    description: "Recent advances in quantum computing are paving the way for revolutionary changes in computational power...",
-    tags: ["Physics", "Technology"],
-    date: "2024-02-21",
-    readingTime: "5 min",
-    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
-  },
-  {
-    title: "AI in Medical Research",
-    description: "Artificial intelligence is transforming how we approach medical research and drug discovery...",
-    tags: ["AI", "Medicine"],
-    date: "2024-02-20",
-    readingTime: "4 min",
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
-  }
-];
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+import { useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
 
 const FeaturedArticles = () => {
+  const navigate = useNavigate();
+  
+  const { data: featuredPosts } = useQuery({
+    queryKey: ['featuredPosts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          slug,
+          content,
+          published_at,
+          category:categories(name),
+          author:authors(name, avatar_url)
+        `)
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(2);
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  if (!featuredPosts?.length) return null;
+
   return (
     <section className="py-12">
       <h2 className="text-3xl font-bold mb-8">Featured Articles</h2>
       <div className="grid gap-8 md:grid-cols-2">
-        {featuredArticles.map((article, index) => (
+        {featuredPosts.map((post, index) => (
           <motion.div
-            key={index}
+            key={post.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.2 }}
+            onClick={() => navigate(`/blog/${post.slug}`)}
+            className="cursor-pointer"
           >
             <Card className="article-card h-full">
               <div className="aspect-[16/9] overflow-hidden rounded-t-lg">
                 <img 
-                  src={article.image} 
-                  alt={article.title}
+                  src={post.content?.cover_image || `https://source.unsplash.com/random/800x600/?${post.category?.name.toLowerCase()}`}
+                  alt={post.title}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
               </div>
               <CardHeader>
                 <div className="flex gap-2 mb-2">
-                  {article.tags.map((tag, tagIndex) => (
-                    <span key={tagIndex} className="tag">{tag}</span>
-                  ))}
+                  <span className="tag">{post.category?.name}</span>
                 </div>
                 <CardTitle className="text-2xl hover:text-primary transition-colors">
-                  {article.title}
+                  {post.title}
                 </CardTitle>
-                <CardDescription className="text-base">{article.description}</CardDescription>
+                <CardDescription className="line-clamp-2">
+                  {post.content?.excerpt}
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm text-accent/40">
-                    <span className="flex items-center gap-1">
-                      <CalendarDays className="h-4 w-4" />
-                      {article.date}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {article.readingTime}
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>
+                      {post.published_at && formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
                     </span>
                   </div>
-                  <button className="flex items-center gap-1 text-primary hover:text-primary-dark transition-colors">
+                  <div className="flex items-center gap-1">
                     Read More
                     <ArrowRight className="h-4 w-4" />
-                  </button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

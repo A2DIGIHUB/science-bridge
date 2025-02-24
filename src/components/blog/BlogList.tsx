@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import type { Post, Tables } from '../../types/supabase';
+import type { Post } from '../../types/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
@@ -43,14 +43,14 @@ export function BlogList() {
       }
 
       if (filters.categories.length > 0) {
-        query = query.in('category_id', filters.categories as string[]);
+        query = query.in('category_id', filters.categories);
       }
 
       if (filters.tags.length > 0) {
         const { data: postIds } = await supabase
           .from('posts_tags')
           .select('post_id')
-          .in('tag_id', filters.tags as string[]);
+          .in('tag_id', filters.tags);
 
         if (postIds) {
           query = query.in('id', postIds.map(p => p.post_id));
@@ -75,7 +75,7 @@ export function BlogList() {
   useEffect(() => {
     async function checkAuthorStatus() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
+      if (user) {
         const { data } = await supabase
           .from('authors')
           .select('*')
@@ -239,7 +239,7 @@ export function BlogList() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src={post.author?.avatar_url || undefined} />
+                            <AvatarImage src={post.author?.avatar_url} />
                             <AvatarFallback>{post.author?.name?.charAt(0)}</AvatarFallback>
                           </Avatar>
                           <span className="text-sm font-medium">{post.author?.name}</span>

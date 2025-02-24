@@ -1,194 +1,236 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import type { Tables } from '../../types/supabase';
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
-import { ImageUpload } from './ImageUpload';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { ImageUpload } from '../ui/image-upload';
 import { toast } from 'react-hot-toast';
-
-interface FormData {
-  title: string;
-  content: string;
-  category_id: string;
-  cover_image: string;
-}
+import { useQuery } from '@tanstack/react-query';
 
 export function BlogCreate() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<Tables<'categories'>[]>([]);
-  const [formData, setFormData] = useState<FormData>({
-    title: '',
-    content: '',
-    category_id: '',
-    cover_image: '',
-  });
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [excerpt, setExcerpt] = useState('');
+  const [coverImage, setCoverImage] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  useEffect(() => {
-    async function fetchCategories() {
-      const { data } = await supabase
+  // Fetch categories
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from('categories')
         .select('*')
         .order('name');
-      if (data) setCategories(data);
+      
+      if (error) throw error;
+      return data;
     }
-    fetchCategories();
-  }, []);
+  });
+
+  // Fetch tags
+  const { data: tags } = useQuery({
+    queryKey: ['tags'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tags')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Get the current user
+      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
+      if (!user) throw new Error('Not authenticated');
 
-      // Get the author record
+      // Get author record
       const { data: author } = await supabase
         .from('authors')
         .select('id')
         .eq('credentials', user.email)
         .single();
 
-      if (!author) throw new Error('No author found');
+      if (!author) throw new Error('Author not found');
 
-      // Create the slug
-      const slug = formData.title
+      // Create slug from title
+      const slug = title
         .toLowerCase()
         .replace(/[^\w\s-]/g, '')
         .replace(/\s+/g, '-');
 
-      // Create the post
-      const { data: post, error } = await supabase
+      // Create post
+      const { data: post, error: postError } = await supabase
         .from('posts')
         .insert({
-          title: formData.title,
-          content: {
-            body: formData.content,
-            excerpt: formData.content.substring(0, 150) + '...'
-          },
-          author_id: author.id,
-          category_id: formData.category_id,
-          status: 'published' as const,
-          cover_image: formData.cover_image,
+          title,
           slug,
-          published_at: new Date().toISOString()
+          content: { body: content, excerpt },
+          cover_image: coverImage,
+          category_id: categoryId,
+          author_id: author.id,
+          status: 'published',
+          published_at: new Date().toISOString(),
         })
         .select()
         .single();
 
-      if (error) throw error;
-      if (!post) throw new Error('Failed to create post');
+      if (postError) throw postError;
 
-      toast.success('Post created successfully!');
+      // Add tags
+      if (selectedTags.length > 0) {
+        const tagConnections = selectedTags.map(tagId => ({
+          post_id: post.id,
+          tag_id: tagId,
+        }));
+
+        const { error: tagsError } = await supabase
+          .from('posts_tags')
+          .insert(tagConnections);
+
+        if (tagsError) throw tagsError;
+      }
+
+      toast.success('Post created successfully');
       navigate(`/blog/${post.slug}`);
     } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to create post');
       console.error('Error creating post:', error);
-      toast.error('Failed to create post');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Create New Post</h1>
-          <p className="text-muted-foreground">
-            Share your knowledge with the community
-          </p>
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Create New Blog Post</CardTitle>
+          <CardDescription>
+            Fill out the form below to create a new blog post. All fields marked with * are required.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Cover Image */}
+            <div className="space-y-2">
+              <Label>Cover Image</Label>
+              <ImageUpload
+                value={coverImage}
+                onChange={setCoverImage}
+                className="w-full h-64"
+              />
+            </div>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="cover_image">Cover Image</Label>
-            <ImageUpload
-              onImageUploaded={(url) => 
-                setFormData(prev => ({ ...prev, cover_image: url }))
-              }
-            />
-          </div>
+            {/* Title */}
+            <div className="space-y-2">
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter post title"
+                required
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Enter post title"
-              required
-            />
-          </div>
+            {/* Excerpt */}
+            <div className="space-y-2">
+              <Label htmlFor="excerpt">Excerpt *</Label>
+              <Textarea
+                id="excerpt"
+                value={excerpt}
+                onChange={(e) => setExcerpt(e.target.value)}
+                placeholder="Write a brief summary of your post"
+                required
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Select
-              value={formData.category_id}
-              onValueChange={(value) =>
-                setFormData(prev => ({ ...prev, category_id: value }))
-              }
-              required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
+            {/* Content */}
+            <div className="space-y-2">
+              <Label htmlFor="content">Content *</Label>
+              <Textarea
+                id="content"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Write your post content"
+                className="min-h-[300px]"
+                required
+              />
+            </div>
+
+            {/* Category */}
+            <div className="space-y-2">
+              <Label htmlFor="category">Category *</Label>
+              <Select value={categoryId} onValueChange={setCategoryId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories?.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Tags */}
+            <div className="space-y-2">
+              <Label>Tags</Label>
+              <div className="flex flex-wrap gap-2">
+                {tags?.map((tag) => (
+                  <Button
+                    key={tag.id}
+                    type="button"
+                    variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      setSelectedTags(prev =>
+                        prev.includes(tag.id)
+                          ? prev.filter(id => id !== tag.id)
+                          : [...prev, tag.id]
+                      );
+                    }}
+                  >
+                    {tag.name}
+                  </Button>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
+              </div>
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              placeholder="Write your post content here..."
-              className="min-h-[300px]"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-end gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate('/blog')}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Post'}
-          </Button>
-        </div>
-      </form>
+            {/* Submit */}
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                className="mr-2"
+                onClick={() => navigate('/blog')}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Creating...' : 'Create Post'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

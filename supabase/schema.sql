@@ -90,6 +90,29 @@ alter table categories enable row level security;
 alter table tags enable row level security;
 alter table posts_tags enable row level security;
 
+-- Quiz scores table
+create table if not exists quiz_scores (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id),
+  score integer not null,
+  total_questions integer not null,
+  category text not null,
+  difficulty text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Quiz scores policies
+create policy "Quiz scores are viewable by everyone"
+on quiz_scores for select
+using (true);
+
+create policy "Users can insert their own scores"
+on quiz_scores for insert
+with check (auth.uid() = user_id);
+
+-- Enable RLS
+alter table quiz_scores enable row level security;
+
 -- Authors policies
 create policy "Public authors are viewable by everyone"
 on authors for select
